@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Simple Calculator</title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<style type="text/css" media=all>
+	   /*table {
+			height: 350px;
+			width: 80%;
+			max-width: 250px;
+			position:absolute;
+			table-layout: fixed;
+			border-collapse: collapse;
+			left: 50%;
+			top: 50%;
+			transform : translate(-50%, -50%);
+	   }*/
+	   td > input[type="text"] {
+			text-align: right;
+			font-size: 38px;
+			padding-left: 7px;
+			padding-right:10px;
+			border : 1px solid grey;
+			border-radius : 3px ;
+	   }
+		td > button,input[type="text"] {
+			width:100%;
+			height: auto;
+		}
+		.table {
+			width: 300px !important;
+		}
+		.table > td > button.add {
+			height: 100% !important;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<table class="table">
+			<thead>
+				<th colspan=4>Electronic Calculator</th>
+			</thead>
+			<tr>
+				<td colspan=4><input type="text" onfocus="this.blur()" id="calcDisplay"></td>
+			</tr>
+			<tr>
+				<td><button type="button" value="AC" name="" class="btn btn-danger">AC</button></td>
+				<td><button type="button" value="CE" name="" class="btn btn-danger">CE</button></td>
+				<td><button type="button" value="/" name="" class="btn btn-default">/</button></td>
+				<td><button type="button" value="*" name="" class="btn btn-default">*</button></td>
+			</tr>
+			<tr>
+				<td><button type="button" value="7" name="" class="btn btn-default">7</button></td>
+				<td><button type="button" value="8" name="" class="btn btn-default">8</button></td>
+				<td><button type="button" value="9" name="" class="btn btn-default">9</button></td>
+				<td><button type="button" value="-" name="" class="btn btn-default">-</button></td>
+			</tr>
+			<tr>
+				<td><button type="button" value="4" name="" class="btn btn-default">4</button></td>
+				<td><button type="button" value="5" name="" class="btn btn-default">5</button></td>
+				<td><button type="button" value="6" name="" class="btn btn-default">6</button></td>
+				<td><button type="button" value="+" name="" class="add btn btn-default">+</button></td>
+			</tr>
+			<tr>
+				<td><button type="button" value="1" name="" class="btn btn-default">1</button></td>
+				<td><button type="button" value="2" name="" class="btn btn-default">2</button></td>
+				<td><button type="button" value="3" name="" class="btn btn-default">3</button></td>
+				<td rowspan=2><button type="button" value="=" name="" class="equals btn btn-default">=</button></td>
+			</tr>
+			<tr>
+				<td colspan=2><button type="button" value="0" name="" class="btn btn-default">0</button></td>
+				<td><button type="button" value="." name="" class="btn btn-default">.</button></td>
+			</tr>
+		</table>
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+
+		var clear = 'CE';
+		var clear_all = 'AC';
+		var operators = ['+','-','/','*','=','.'];
+		function startCalc() {
+			$("#calcDisplay").val(0);
+		}
+		function isEmptyCalc() {
+			if($("#calcDisplay").val() == "0"){
+				return true;
+			}
+			return false;
+		}
+		function getButtonValue(button) {
+			return $(button).val();
+		}
+		function setNumberToDisplay(number) {
+			if(isEmptyCalc()) {
+				if(operators.indexOf(number) == -1 || number == '.') {
+					if(number == '.') {
+						$("#calcDisplay").val($("#calcDisplay").val() + number);
+					}
+					else {
+						$("#calcDisplay").val(number);	
+					}
+				}
+			}
+			else {
+				var calcStr = $("#calcDisplay").val();
+				var lastChar = calcStr[calcStr.length-1];
+				if(operators.indexOf(lastChar) == -1 || operators.indexOf(number) == -1) {
+					$("#calcDisplay").val(calcStr + number);
+				}
+			}
+		}
+		function setResult(result) {
+			if(result == "Infinity")
+			{
+				$("#calcDisplay").val(0);
+			}
+			else
+			{
+				$("#calcDisplay").val(result);	
+			}
+		}
+		function getCalcDisplayValue() {
+			return $("#calcDisplay").val();
+		}
+		function clearCalc() {
+			$("#calcDisplay").val(0);
+		}
+		function evaluateExpr(expr) {
+			result = eval(expr);
+			setResult(result);
+		}
+		$(document).ready(function(){
+			startCalc();
+			$("button").click(function() {
+				value = getButtonValue(this);
+				if(value != clear && value !=clear_all)
+				{
+					if(value != "=")
+					{
+						setNumberToDisplay(value);
+					}
+					else
+					{
+						evaluateExpr(getCalcDisplayValue());
+					}
+				}
+				else
+				{
+					clearCalc();	
+				}
+			});
+
+			// $(".equals").click(function(){
+			// 	expr = getCalcDisplayValue();
+			// 	evaluateExpr(expr);
+			// });
+		});
+	</script>
+</body>
+</html>
