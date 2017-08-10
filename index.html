@@ -5,17 +5,6 @@
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<style type="text/css" media=all>
-	   /*table {
-			height: 350px;
-			width: 80%;
-			max-width: 250px;
-			position:absolute;
-			table-layout: fixed;
-			border-collapse: collapse;
-			left: 50%;
-			top: 50%;
-			transform : translate(-50%, -50%);
-	   }*/
 	   td > input[type="text"] {
 			text-align: right;
 			font-size: 38px;
@@ -29,10 +18,14 @@
 			height: auto;
 		}
 		.table {
-			width: 300px !important;
+			width: 350px !important;
+			position: absolute;
+			top:50%;
+			left:50%;
+			transform : translate(-50%, -50%);
 		}
-		.table > td > button.add {
-			height: 100% !important;
+		.equals{
+			height: 85px;
 		}
 	</style>
 </head>
@@ -82,19 +75,25 @@
 
 		var clear = 'CE';
 		var clear_all = 'AC';
+		var lastOperator = -1;
+		var maximunLength = 8;
 		var operators = ['+','-','/','*','=','.'];
+
 		function startCalc() {
 			$("#calcDisplay").val(0);
 		}
+
 		function isEmptyCalc() {
 			if($("#calcDisplay").val() == "0"){
 				return true;
 			}
 			return false;
 		}
+
 		function getButtonValue(button) {
 			return $(button).val();
 		}
+
 		function setNumberToDisplay(number) {
 			if(isEmptyCalc()) {
 				if(operators.indexOf(number) == -1 || number == '.') {
@@ -109,11 +108,28 @@
 			else {
 				var calcStr = $("#calcDisplay").val();
 				var lastChar = calcStr[calcStr.length-1];
-				if(operators.indexOf(lastChar) == -1 || operators.indexOf(number) == -1) {
-					$("#calcDisplay").val(calcStr + number);
+				if(calcStr.length <= maximunLength) {
+					if(operators.indexOf(lastChar) == -1 || operators.indexOf(number) == -1) {
+						if(number == '.') {
+							if(calcStr.indexOf('.') == -1) {
+								$("#calcDisplay").val(calcStr + number);
+							}
+						}
+						else {
+							if(operators.indexOf(number) != -1) {
+								lastOperator = calcStr.length;
+							}
+							$("#calcDisplay").val(calcStr + number);
+						}
+					}
 				}
+				else {
+					clearCalc(clear_all);
+				}
+				
 			}
 		}
+
 		function setResult(result) {
 			if(result == "Infinity")
 			{
@@ -124,16 +140,40 @@
 				$("#calcDisplay").val(result);	
 			}
 		}
+
 		function getCalcDisplayValue() {
 			return $("#calcDisplay").val();
 		}
-		function clearCalc() {
-			$("#calcDisplay").val(0);
+
+		function clearCalc(value) {
+			if( value == clear ) {
+				currentValue = $("#calcDisplay").val();
+				if(lastOperator == -1) {
+					$("#calcDisplay").val(0);	
+				}
+				else {
+					currentValue = currentValue.slice(0,lastOperator+1);
+					$("#calcDisplay").val(currentValue);
+				}
+			}
+			else {
+				$("#calcDisplay").val(0);
+			}
 		}
+
 		function evaluateExpr(expr) {
-			result = eval(expr);
-			setResult(result);
+			lastChar = expr[expr.length-1];
+			if(operators.indexOf(lastChar) == -1) {
+				result = eval(expr);
+				setResult(result);	
+			}
+			else {
+				expr = expr.slice( 0, expr.length - 1 );
+				result = eval(expr);
+				setResult(result);	
+			}
 		}
+
 		$(document).ready(function(){
 			startCalc();
 			$("button").click(function() {
@@ -151,14 +191,9 @@
 				}
 				else
 				{
-					clearCalc();	
+					clearCalc(value);	
 				}
 			});
-
-			// $(".equals").click(function(){
-			// 	expr = getCalcDisplayValue();
-			// 	evaluateExpr(expr);
-			// });
 		});
 	</script>
 </body>
